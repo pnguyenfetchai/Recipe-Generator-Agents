@@ -45,11 +45,11 @@ def register():
 
         **Input Data Model**
         ```
-        class StockPriceRequest(Model):
-            ticker: str
+        class Ingridients(Model):
+            ingredients: list[str]
         ```
 
-        **Output
+        **Output**
         """
     
     # the address in which your agent will respond to incoming messages
