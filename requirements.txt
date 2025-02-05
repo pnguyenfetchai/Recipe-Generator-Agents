@@ -1,0 +1,4 @@
+Flask==2.0.2
+fetchai==0.1.30
+openai==0.10.2
+python-dotenv==1.0.1
