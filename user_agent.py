@@ -28,13 +28,25 @@ def register():
 
     # This is how you optimize your AI's search engine performance
     readme = """
-        <description>This AI generates recipes based on ingredients</description>
-        <use_cases>
-            <use_case>Recipe generation from ingredients</use_case>
-        </use_cases>
+      
+        ![tag:innovation-lab](https://img.shields.io/badge/innovation--lab-3D8BD3)
+
+        ![domain:cooking](https://img.shields.io/badge/cooking-3D8BD3)
+
+
+        **Description**:  user agent that sends a message to the recipe agent to generate a recipe based on the ingredients you provide. 
+        **Input Data Model**
+        ```
+        class Ingridients(Model):
+            ingredients: list[str]
+        ```
+
+        **Output**
+
+
+        
     """
 
-    # The webhook that your AI receives messages on.
     ai_webhook = "http://127.0.0.1:5002/webhook"
 
     register_with_agentverse(
@@ -47,56 +59,54 @@ def register():
 
     return {"status": "Agent registered"}
 
-@app.route('/search', methods=['GET'])
-def search():
-    query = "I want to generate a recipe"
-    available_ais = fetch.ai(query)
-    sender_identity = Identity.from_seed("whatever i want this to be, but i am searching", 0)
+@app.route('/generate', methods=['GET'])
+def generate():
+    sender_identity = Identity.from_seed("searching recipe eheheh", 0)
 
-    # For the sake of example, the ingredients for the recipe request
     ingredients = ["tomato", "cheese", "basil", "olive oil"]
 
-    for ai in available_ais.get('ais'):
-        payload = {
-            "ingredients": ingredients
-        }
+    target_address = "agent1qth28h5gqjn9m4jrhhrx6qqdrugj0dvdqq4pu3httmncqu69pjjsc9xat24"
 
-        other_addr = ai.get("address", "")
+    payload = {
+        "ingredients": ingredients
+    }
 
-        print(f"sending a message to an ai, {other_addr}")
+    send_message_to_agent(
+        sender=sender_identity,
+        target=target_address,
+        payload=payload,
+        session=uuid4()
+    )
 
-        send_message_to_agent(
-            sender=sender_identity,
-            target=ai.get("address", ""),
-            payload=payload,
-            session=uuid4()
-        )
-
-    return {"status": "Recipe agent searched"}
+    return {"status": "Message sent to agent"}
+  
+    
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    
     data = request.json
-    print(f"webhook received: {data}")
+    print("this is the dataaaa", data)
+  
     try:
         message = parse_message_from_agent(json.dumps(data))
     except ValueError as e:
         print(f"Error: {e}")
         return {"status": f"error: {e}"}
 
-    sender = message.sender
+    # sender = message.sender
     payload = message.payload
 
-    # Handle the response from the recipe agent
-    if "recipe" in payload:
-        print(f"Recipe received: {payload['recipe']}")
-        return {"status": "Recipe received and processed"}
-    else:
-        print("No recipe in the payload.")
-        return {"status": "No recipe found"}
+    recipe_text = payload.get("Response", "")
+
+    print("Recipe generated:\n", recipe_text)
+
+    return {"status": "yipeee we got a response!"}
 
 register()
-search()
+    
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5002, debug=True)

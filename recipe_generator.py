@@ -26,8 +26,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 if AGENTVERSE_KEY == "":
     sys.exit("Environment variable AGENTVERSE_KEY not defined")
 
-# You wouldn't normally want to expose the registration logic like this,
-# but it works for a nice demo.
+
 @app.route('/register', methods=['GET'])
 def register():
 
@@ -76,10 +75,10 @@ def webhook():
         return {"status": f"error: {e}"}
 
     sender = message.sender
+    print(f"im checking the sender right hererere: {sender}")
     payload = message.payload
     ingredients = payload.get("ingredients", None)
 
-    print(f"ingredients bro bro: {ingredients}")
 
     ai_identity = Identity.from_seed("I love this omgomgomgo ", 0)
 
